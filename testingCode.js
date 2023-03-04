@@ -12,3 +12,16 @@ axios.get('https://api.etherscan.io/api?module=account&action=tokennfttx&contrac
     .catch((err) => {
         console.log(err);
     })
+
+
+    const currentTimestamp = Math.floor(Date.now()/1000)
+    const currentDate = new Date(currentTimestamp * 1000)
+    
+    const currentStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-10)
+    const currentEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() -9)
+    
+    const currentStartTimestamp = currentStart.getTime() / 1000
+    const currentEndTimestamp = currentEnd.getTime() / 1000
+    
+    console.log(currentStartTimestamp)
+    console.log(currentEndTimestamp)

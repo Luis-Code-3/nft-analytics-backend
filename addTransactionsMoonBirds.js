@@ -5,13 +5,14 @@ const Nft = require('./models/Nft.model')
 
 const key = 'J7C1W8MKPMEPPCNRXDSH9ZXC4SY7NFT9YD';
 const collectionAddy = '0x23581767a106ae21c074b2276D25e5C3e136a68b';
-const tokenTransfersCollection = `https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0x23581767a106ae21c074b2276D25e5C3e136a68b&page=1&offset=2&startblock=0&endblock=99999999&sort=desc&apikey=${key}`;
+const tokenTransfersCollection = `https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0x23581767a106ae21c074b2276D25e5C3e136a68b&page=1&offset=100&startblock=0&endblock=99999999&sort=desc&apikey=${key}`;
 
 
-async function Moonbirds () {
+async function Moonbirds (currentEthereumPrice) {
     
     let sortedArray = [];
     let recentTransactionBlock = '';
+    //console.log(currentEthereumPrice);
 
     await Collection.findOne({ nftName: "Moonbird"})
         .then((foundCollection) => {
@@ -39,8 +40,9 @@ async function Moonbirds () {
             tokenId: el.tokenID,
             txHash:el.hash,
             salePrice: '',
+            salePriceUsd: 0,
             collectionAddress: el.contractAddress,
-            transactionTimeStamp: el.timeStamp,
+            transactionTimeStamp: Number(el.timeStamp),
             blockNumber: el.blockNumber,
             nonce: el.nonce,
             transactionIndex: el.transactionIndex
@@ -62,6 +64,7 @@ async function Moonbirds () {
     
         console.log("Final:", sortedArray);
         console.log("Most Recent Transaction:", recentTransactionBlock);
+        await addUsdPrice();
         await addToDatabase();
     
     };
@@ -72,6 +75,7 @@ async function Moonbirds () {
         if (obj.buyer === '0x39da41747a83aee658334415666f3ef92dd0d541') {
           return;
         }
+        //console.log(obj.tokenId);
 
         const txInfo = await axios.get(`https://api.etherscan.io/api?module=account&action=txlistinternal&txhash=${obj.txHash}&apikey=${key}`)
         //console.log(txInfo.data.result);
@@ -93,10 +97,10 @@ async function Moonbirds () {
 
 
     const deeperSaleCheck = async (sameObj) => {
-        //console.log('Same OBJ:', sameObj);
+        //console.log('DEEPER CHECK TOKEN:', sameObj.tokenId);
         const buyerTokenTransfers = await axios.get(`https://api.etherscan.io/api?module=account&action=tokentx&address=${sameObj.buyer}&page=1&offset=100&startblock=0&endblock=27025780&sort=desc&apikey=${key}`)
         let filteredTransfers = buyerTokenTransfers.data.result.filter((transfer) => {
-          return sameObj.transactionTimeStamp === transfer.timeStamp && sameObj.blockNumber === transfer.blockNumber && sameObj.nonce === transfer.nonce && sameObj.transactionIndex === transfer.transactionIndex && transfer.tokenSymbol !== 'APE'
+          return sameObj.transactionTimeStamp === Number(transfer.timeStamp) && sameObj.blockNumber === transfer.blockNumber && sameObj.nonce === transfer.nonce && sameObj.transactionIndex === transfer.transactionIndex && transfer.tokenSymbol !== 'APE'
         })
         //console.log("Filtered Transfers",filteredTransfers);
     
@@ -116,6 +120,42 @@ async function Moonbirds () {
     }
 
 
+    const addUsdPrice = async () => {
+      for (const saleTran of sortedArray) {
+
+        let ethPrice = 0;
+
+        if(saleTran.transactionTimeStamp >= 1677024000 && saleTran.transactionTimeStamp < 1677110400) {
+          ethPrice = 1,643.23;
+        } else if(saleTran.transactionTimeStamp >= 1677110400 && saleTran.transactionTimeStamp < 1677196800) {
+          ethPrice = 1,651.07;
+        } else if(saleTran.transactionTimeStamp >= 1677196800 && saleTran.transactionTimeStamp < 1677283200) {
+          ethPrice = 1,608.37;
+        } else if(saleTran.transactionTimeStamp >= 1677283200 && saleTran.transactionTimeStamp < 1677369600) {
+          ethPrice = 1,594.91;
+        } else if(saleTran.transactionTimeStamp >= 1677369600 && saleTran.transactionTimeStamp < 1677456000) {
+          ethPrice = 1,640.82;
+        } else if(saleTran.transactionTimeStamp >= 1677456000 && saleTran.transactionTimeStamp < 1677542400) {
+          ethPrice = 1,634.33;
+        } else if(saleTran.transactionTimeStamp >= 1677542400 && saleTran.transactionTimeStamp < 1677628800) {
+          ethPrice = 1,605.90;
+        } else if(saleTran.transactionTimeStamp >= 1677628800 && saleTran.transactionTimeStamp < 1677715200) {
+          ethPrice = 1,663.43;
+        } else if(saleTran.transactionTimeStamp >= 1677715200 && saleTran.transactionTimeStamp < 1677801600) {
+          ethPrice = 1,647.32;
+        } else if(saleTran.transactionTimeStamp >= 1677801600 && saleTran.transactionTimeStamp < 1677888000) {
+          ethPrice = 1,569.17;
+        } else {
+          ethPrice = currentEthereumPrice;
+        }
+
+        saleTran.salePriceUsd = Number((saleTran.salePrice * ethPrice).toFixed(2))
+      }
+    }
+
+
+
+
     const addToDatabase = async () => {
         for (const sale of sortedArray) {
             await Transaction.create({
@@ -123,8 +163,8 @@ async function Moonbirds () {
                 seller: sale.seller,
                 tokenName: sale.tokenName,
                 tokenId: sale.tokenId,
-                salePriceEth: sale.salePrice,
-                salePriceUSD: '',
+                salePriceEth: Number(sale.salePrice),
+                salePriceUSD: sale.salePriceUsd,
                 transactionTimeStamp: sale.transactionTimeStamp,
                 blockNumber: sale.blockNumber,
                 transactionHash: sale.txHash,

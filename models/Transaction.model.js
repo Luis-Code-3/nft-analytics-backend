@@ -20,14 +20,14 @@ const transactionSchema = new Schema(
     },
     nftTokenObject: {type: Schema.Types.ObjectId, ref: "Nft"},
     salePriceEth: {
-      type: String,
+      type: Number,
       required: true,
     },
     salePriceUSD: {
-      type: String,
+      type: Number,
     },
     transactionTimeStamp: {
-      type: String,
+      type: Number,
       required: true,
     },
     blockNumber: {
