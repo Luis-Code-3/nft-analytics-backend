@@ -55,13 +55,13 @@ mongoose
     //     })
 
 
-    // Collection.find()
-    // .then((foundCollections) => {
-    //     console.log(foundCollections.length);
-    // })
-    // .catch((err) => {
-    //     console.log(err);
-    // })
+    Nft.find()
+    .then((foundCollections) => {
+        console.log(foundCollections.length);
+    })
+    .catch((err) => {
+        console.log(err);
+    })
 
 
     // Collection.findOne({ nftName: "Doodle"})
@@ -86,14 +86,15 @@ mongoose
     // .catch((err) => {
     //   console.log(err);
     // })
-    const currentTimestamp = 1677024000
-    axios.get(`https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts=${currentTimestamp}&api_key=5d5650ccd42d58b2acf771c64d075995bee36e9af725af927f466d6b0a4f2052`)
-    .then((response) => {
-      console.log(response.data.ETH.USD);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
+
+    // const currentTimestamp = 1677024000
+    // axios.get(`https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts=${currentTimestamp}&api_key=5d5650ccd42d58b2acf771c64d075995bee36e9af725af927f466d6b0a4f2052`)
+    // .then((response) => {
+    //   console.log(response.data.ETH.USD);
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // })
 
 
   })
