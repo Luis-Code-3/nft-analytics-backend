@@ -1,5 +1,5 @@
-const Collection = require('./models/Collection.model')
-const Nft = require('./models/Nft.model')
+const Collection = require('../models/Collection.model')
+const Nft = require('../models/Nft.model')
 var mongoose = require('mongoose');
 const axios = require('axios')
 require("dotenv").config();

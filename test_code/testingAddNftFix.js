@@ -1,5 +1,5 @@
-const Collection = require('./models/Collection.model')
-const Nft = require('./models/Nft.model')
+const Collection = require('../models/Collection.model')
+const Nft = require('../models/Nft.model')
 var mongoose = require('mongoose');
 const axios = require('axios')
 require("dotenv").config();
@@ -12,6 +12,8 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then((x) => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`);
+
+    // 
     Nft.create({
         nftName: 'ON1',
         tokenId: BigInt('0x0000000000000000000000000000000000000000000000000000000000000514').toString(),

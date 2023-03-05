@@ -5,6 +5,9 @@ const axios = require('axios');
 const { all } = require('./routes');
 
 
+
+
+// SCRIPT FOR GRABBING ALL NFTS FROM COLLECTION. HITTIN ALCHEMY API
 let allNftsInCollection = []
 let nftsFromAlchemy = {};
 
