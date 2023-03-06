@@ -54,9 +54,7 @@ const collectionSchema = new Schema(
     },
     recentTranBlock: {
     type: String
-    },
-    tokens: [{type: Schema.Types.ObjectId, ref: "Nft"}],
-    transactions: [{type: Schema.Types.ObjectId, ref: "Transaction"}]
+    }
   },
   {
     timeseries: true,

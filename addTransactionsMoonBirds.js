@@ -2,8 +2,9 @@ const axios = require('axios')
 const Transaction = require('./models/Transaction.model')
 const Collection = require('./models/Collection.model')
 const Nft = require('./models/Nft.model')
+require('dotenv').config()
 
-const key = 'J7C1W8MKPMEPPCNRXDSH9ZXC4SY7NFT9YD';
+const key = process.env.ETHERSCAN_KEY;
 const collectionAddy = '0x23581767a106ae21c074b2276D25e5C3e136a68b';
 const tokenTransfersCollection = `https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0x23581767a106ae21c074b2276D25e5C3e136a68b&page=1&offset=100&startblock=0&endblock=99999999&sort=desc&apikey=${key}`;
 
@@ -145,6 +146,10 @@ async function Moonbirds (currentEthereumPrice) {
           ethPrice = 1,647.32;
         } else if(saleTran.transactionTimeStamp >= 1677801600 && saleTran.transactionTimeStamp < 1677888000) {
           ethPrice = 1,569.17;
+        } else if(saleTran.transactionTimeStamp >= 1677888000 && saleTran.transactionTimeStamp < 1677974400) {
+          ethPrice = 1,566.92;
+        } else if(saleTran.transactionTimeStamp >= 1677974400 && saleTran.transactionTimeStamp < 1678060800) {
+          ethPrice = 1,564.47;
         } else {
           ethPrice = currentEthereumPrice;
         }
@@ -171,24 +176,24 @@ async function Moonbirds (currentEthereumPrice) {
                 collectionAddress: sale.collectionAddress,
             })
             .then((createdTransaction) => {
-                // Nft.findOneAndUpdate({collectionAddress: createdTransaction.collectionAddress, tokenId: createdTransaction.tokenId}, {
-                //     $push: {transactions: createdTransaction._id}
-                // }, {new: true})
-                // .then((updatedNft) => {
-                //     console.log(updatedNft);
-                //     Transaction.findByIdAndUpdate(createdTransaction._id, {
-                //         $set: {nftTokenObject: updatedNft._id}
-                //     }, {new: true})
-                //     .then((updatedTransaction) => {
-                //         console.log(updatedTransaction);
-                //     })
-                //     .catch((err) => {
-                //         console.log(err);
-                //     })
-                // })
-                // .catch((err) => {
-                //     console.log(err);
-                // })
+                Nft.findOneAndUpdate({collectionAddress: createdTransaction.collectionAddress, tokenId: createdTransaction.tokenId}, {
+                    $push: {transactions: createdTransaction._id}
+                }, {new: true})
+                .then((updatedNft) => {
+                    console.log(updatedNft);
+                    Transaction.findByIdAndUpdate(createdTransaction._id, {
+                        $set: {nftTokenObject: updatedNft._id}
+                    }, {new: true})
+                    .then((updatedTransaction) => {
+                        console.log(updatedTransaction);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
             })
             .catch((err) => {
                 console.log(err);

@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 var cors = require('cors')
+var { getFloorPriceAndEthPrice } = require('./floorPricesAndEthPrice')
+var transactionSeed = require('./addTransAll')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -52,6 +54,26 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+getFloorPriceAndEthPrice();
+let floorPriceAndEthPriceInterval;
+floorPriceAndEthPriceInterval = setInterval(() => {
+  getFloorPriceAndEthPrice();
+}, 60 * 60 * 1000)
+
+function startInterval() {
+  // Get the current time and calculate the milliseconds until the next :30 minute
+  const now = new Date();
+  const msUntil30 = (30 - now.getMinutes() % 30) * 60 * 1000 - now.getSeconds() * 1000 - now.getMilliseconds();
+  // Wait until the next :30 minute and then start the interval
+  setTimeout(() => {
+    transactionSeed(); // Run the code immediately
+    setInterval(transactionSeed(), 30 * 60 * 1000); // Run the code every 30 minutes
+  }, msUntil30);
+}
+
+startInterval();
 
 mongoose
   .connect(process.env.MONGODB_URI)

@@ -4,12 +4,36 @@ const Collection = require('../models/Collection.model')
 const Nft = require('../models/Nft.model')
 const Transaction = require('../models/Transaction.model')
 const axios = require('axios')
+const { returnFloorPriceAndEthPrice } = require('../floorPricesAndEthPrice');
 
 
 // IMPORT CURRENT ETH PRICE AND ALL COLLECTION FLOOR PRICES
+let azukiFloorPrice = 0;
+let boredApeFloorPrice = 0;
+let boredDogFloorPrice = 0;
+let doodleFloorPrice = 0;
+let moonbirdFloorPrice = 0;
+let onforceFloorPrice = 0;
+let coolcatFloorPrice = 0;
+let penguinFloorPrice = 0;
+let currentEthereumPrice = 0;
+
+function setFloorAndEth() {
+    let floorAndEth = returnFloorPriceAndEthPrice();
+    azukiFloorPrice = floorAndEth[0];
+    boredApeFloorPrice = floorAndEth[1];
+    boredDogFloorPrice = floorAndEth[2];
+    doodleFloorPrice = floorAndEth[3];
+    moonbirdFloorPrice = floorAndEth[4];
+    onforceFloorPrice = floorAndEth[5];
+    coolcatFloorPrice = floorAndEth[6];
+    penguinFloorPrice = floorAndEth[7];
+    currentEthereumPrice = floorAndEth[8];
+}
 
 // THIRTY MINUTES
 router.get('/thirtyMinutes', async (req, res) => {
+    setFloorAndEth();
     let currentTimestamp = Math.floor(Date.now()/1000)
     //let currentTimestamp = 1677958278
     const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -70,6 +94,7 @@ router.get('/thirtyMinutes', async (req, res) => {
         collectionAddress: "0x8a90cab2b38dba80c64b7734e58ee1db38b8992e",
         tokenSupply: '10,000',
         floorPrice: doodleFloorPrice,
+        floorPriceUSD: Number((doodleFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: DoodlesTransactions.length,
@@ -85,6 +110,7 @@ router.get('/thirtyMinutes', async (req, res) => {
         collectionAddress: '0xed5af388653567af2f388e6224dc7c4b3241c544',
         tokenSupply: '10,000',
         floorPrice: azukiFloorPrice,
+        floorPriceUSD: Number((azukiFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: azukiTransactions.length,
@@ -100,6 +126,7 @@ router.get('/thirtyMinutes', async (req, res) => {
         collectionAddress: '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d',
         tokenSupply: '10,000',
         floorPrice: boredApeFloorPrice,
+        floorPriceUSD: Number((boredApeFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: BoredApeTransactions.length,
@@ -115,6 +142,7 @@ router.get('/thirtyMinutes', async (req, res) => {
         collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
         tokenSupply: '9,602',
         floorPrice: boredDogFloorPrice,
+        floorPriceUSD: Number((boredDogFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: BoredDogTransactions.length,
@@ -130,6 +158,7 @@ router.get('/thirtyMinutes', async (req, res) => {
         collectionAddress: '0x23581767a106ae21c074b2276d25e5c3e136a68b',
         tokenSupply: '10,000',
         floorPrice: moonbirdFloorPrice,
+        floorPriceUSD: Number((moonbirdFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: MoonbirdsTransactions.length,
@@ -145,6 +174,7 @@ router.get('/thirtyMinutes', async (req, res) => {
         collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
         tokenSupply: '7,777',
         floorPrice: onforceFloorPrice,
+        floorPriceUSD: Number((onforceFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: OnForceTransactions.length,
@@ -160,6 +190,7 @@ router.get('/thirtyMinutes', async (req, res) => {
         collectionAddress: '0x1a92f7381b9f03921564a437210bb9396471050c',
         tokenSupply: '10,000',
         floorPrice: coolcatFloorPrice,
+        floorPriceUSD: Number((coolcatFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: CoolCatsTransactions.length,
@@ -175,6 +206,7 @@ router.get('/thirtyMinutes', async (req, res) => {
         collectionAddress: '0xbd3531da5cf5857e7cfaa92426877b022e612cf8',
         tokenSupply: '10,000',
         floorPrice: penguinFloorPrice,
+        floorPriceUSD: Number((penguinFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: PenguinTransactions.length,
@@ -190,8 +222,13 @@ router.get('/thirtyMinutes', async (req, res) => {
     })
 
     doodleObject.volumeEth = Number((doodleObject.volumeEth).toFixed(2));
-    doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
-    doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+    if(DoodlesTransactions.length === 0) {
+        doodleObject.averageSalePriceEth = 0
+        doodleObject.averageSalePriceUsd = 0
+    } else {
+        doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
+        doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+    }
     doodleObject.marketCapEth = Math.round(Number(doodleObject.tokenSupply.replaceAll(',','')) * doodleFloorPrice)
     doodleObject.marketCapUsd = Math.round(doodleObject.marketCapEth * currentEthereumPrice)
 
@@ -201,8 +238,13 @@ router.get('/thirtyMinutes', async (req, res) => {
     })
 
     azukiObject.volumeEth = Number((azukiObject.volumeEth).toFixed(2));
-    azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
-    azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+    if(azukiTransactions.length === 0) {
+        azukiObject.averageSalePriceEth = 0
+        azukiObject.averageSalePriceUsd = 0
+    } else {
+        azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
+        azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+    }
     azukiObject.marketCapEth = Math.round(Number(azukiObject.tokenSupply.replaceAll(',','')) * azukiFloorPrice)
     azukiObject.marketCapUsd = Math.round(azukiObject.marketCapEth * currentEthereumPrice)
 
@@ -212,8 +254,13 @@ router.get('/thirtyMinutes', async (req, res) => {
     })
 
     boredApeObject.volumeEth = Number((boredApeObject.volumeEth).toFixed(2));
-    boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
-    boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+    if(BoredApeTransactions.length === 0) {
+        boredApeObject.averageSalePriceEth = 0
+        boredApeObject.averageSalePriceUsd = 0
+    } else {
+        boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
+        boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+    }
     boredApeObject.marketCapEth = Math.round(Number(boredApeObject.tokenSupply.replaceAll(',','')) * boredApeFloorPrice)
     boredApeObject.marketCapUsd = Math.round(boredApeObject.marketCapEth * currentEthereumPrice)
 
@@ -223,8 +270,13 @@ router.get('/thirtyMinutes', async (req, res) => {
     })
 
     boredDogObject.volumeEth = Number((boredDogObject.volumeEth).toFixed(2));
-    boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
-    boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+    if(BoredDogTransactions.length === 0) {
+        boredDogObject.averageSalePriceEth = 0
+        boredDogObject.averageSalePriceUsd = 0
+    } else {
+        boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
+        boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+    }
     boredDogObject.marketCapEth = Math.round(Number(boredDogObject.tokenSupply.replaceAll(',','')) * boredDogFloorPrice)
     boredDogObject.marketCapUsd = Math.round(boredDogObject.marketCapEth * currentEthereumPrice)
 
@@ -234,8 +286,13 @@ router.get('/thirtyMinutes', async (req, res) => {
     })
 
     moonbirdObject.volumeEth = Number((moonbirdObject.volumeEth).toFixed(2));
-    moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
-    moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+    if(MoonbirdsTransactions.length === 0) {
+        moonbirdObject.averageSalePriceEth = 0
+        moonbirdObject.averageSalePriceUsd = 0
+    } else {
+        moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
+        moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+    }
     moonbirdObject.marketCapEth = Math.round(Number(moonbirdObject.tokenSupply.replaceAll(',','')) * moonbirdFloorPrice)
     moonbirdObject.marketCapUsd = Math.round(moonbirdObject.marketCapEth * currentEthereumPrice)
 
@@ -245,8 +302,13 @@ router.get('/thirtyMinutes', async (req, res) => {
     })
 
     onForceObject.volumeEth = Number((onForceObject.volumeEth).toFixed(2));
-    onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
-    onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+    if(OnForceTransactions.length === 0) {
+        onForceObject.averageSalePriceEth = 0
+        onForceObject.averageSalePriceUsd = 0
+    } else {
+        onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
+        onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+    }
     onForceObject.marketCapEth = Math.round(Number(onForceObject.tokenSupply.replaceAll(',','')) * onforceFloorPrice)
     onForceObject.marketCapUsd = Math.round(onForceObject.marketCapEth * currentEthereumPrice)
 
@@ -256,8 +318,13 @@ router.get('/thirtyMinutes', async (req, res) => {
     })
 
     coolCatsObject.volumeEth = Number((coolCatsObject.volumeEth).toFixed(2));
-    coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
-    coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+    if(CoolCatsTransactions.length === 0) {
+        coolCatsObject.averageSalePriceEth = 0
+        coolCatsObject.averageSalePriceUsd = 0
+    } else {
+        coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
+        coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+    }
     coolCatsObject.marketCapEth = Math.round(Number(coolCatsObject.tokenSupply.replaceAll(',','')) * coolcatFloorPrice)
     coolCatsObject.marketCapUsd = Math.round(coolCatsObject.marketCapEth * currentEthereumPrice)
 
@@ -267,8 +334,13 @@ router.get('/thirtyMinutes', async (req, res) => {
     })
 
     penguinObject.volumeEth = Number((penguinObject.volumeEth).toFixed(2));
-    penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
-    penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+    if(PenguinTransactions.length === 0) {
+        penguinObject.averageSalePriceEth = 0
+        penguinObject.averageSalePriceUsd = 0
+    } else {
+        penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
+        penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+    }
     penguinObject.marketCapEth = Math.round(Number(penguinObject.tokenSupply.replaceAll(',','')) * penguinFloorPrice)
     penguinObject.marketCapUsd = Math.round(penguinObject.marketCapEth * currentEthereumPrice)
 
@@ -277,6 +349,7 @@ router.get('/thirtyMinutes', async (req, res) => {
     // renders
 
     let collectionAnalytics = [doodleObject, azukiObject, boredApeObject, boredDogObject, moonbirdObject, onForceObject, coolCatsObject, penguinObject];
+    //console.log(collectionAnalytics);
     res.json(collectionAnalytics)
 });
 
@@ -292,6 +365,7 @@ router.get('/thirtyMinutes', async (req, res) => {
 // 1 HOUR
 
 router.get('/hour', async (req, res) => {
+            setFloorAndEth();
             let currentTimestamp = Math.floor(Date.now()/1000)
             //let currentTimestamp = 1677958278
             const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -351,6 +425,7 @@ router.get('/hour', async (req, res) => {
                 collectionAddress: "0x8a90cab2b38dba80c64b7734e58ee1db38b8992e",
                 tokenSupply: '10,000',
                 floorPrice: doodleFloorPrice,
+                floorPriceUSD: Number((doodleFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: DoodlesTransactions.length,
@@ -366,6 +441,7 @@ router.get('/hour', async (req, res) => {
                 collectionAddress: '0xed5af388653567af2f388e6224dc7c4b3241c544',
                 tokenSupply: '10,000',
                 floorPrice: azukiFloorPrice,
+                floorPriceUSD: Number((azukiFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: azukiTransactions.length,
@@ -381,6 +457,7 @@ router.get('/hour', async (req, res) => {
                 collectionAddress: '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d',
                 tokenSupply: '10,000',
                 floorPrice: boredApeFloorPrice,
+                floorPriceUSD: Number((boredApeFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: BoredApeTransactions.length,
@@ -396,6 +473,7 @@ router.get('/hour', async (req, res) => {
                 collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
                 tokenSupply: '9,602',
                 floorPrice: boredDogFloorPrice,
+                floorPriceUSD: Number((boredDogFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: BoredDogTransactions.length,
@@ -411,6 +489,7 @@ router.get('/hour', async (req, res) => {
                 collectionAddress: '0x23581767a106ae21c074b2276d25e5c3e136a68b',
                 tokenSupply: '10,000',
                 floorPrice: moonbirdFloorPrice,
+                floorPriceUSD: Number((moonbirdFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: MoonbirdsTransactions.length,
@@ -426,6 +505,7 @@ router.get('/hour', async (req, res) => {
                 collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
                 tokenSupply: '7,777',
                 floorPrice: onforceFloorPrice,
+                floorPriceUSD: Number((onforceFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: OnForceTransactions.length,
@@ -441,6 +521,7 @@ router.get('/hour', async (req, res) => {
                 collectionAddress: '0x1a92f7381b9f03921564a437210bb9396471050c',
                 tokenSupply: '10,000',
                 floorPrice: coolcatFloorPrice,
+                floorPriceUSD: Number((coolcatFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: CoolCatsTransactions.length,
@@ -456,6 +537,7 @@ router.get('/hour', async (req, res) => {
                 collectionAddress: '0xbd3531da5cf5857e7cfaa92426877b022e612cf8',
                 tokenSupply: '10,000',
                 floorPrice: penguinFloorPrice,
+                floorPriceUSD: Number((penguinFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: PenguinTransactions.length,
@@ -471,8 +553,13 @@ router.get('/hour', async (req, res) => {
             })
     
             doodleObject.volumeEth = Number((doodleObject.volumeEth).toFixed(2));
-            doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
-            doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+            if(DoodlesTransactions.length === 0) {
+                doodleObject.averageSalePriceEth = 0
+                doodleObject.averageSalePriceUsd = 0
+            } else {
+                doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
+                doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+            }
             doodleObject.marketCapEth = Math.round(Number(doodleObject.tokenSupply.replaceAll(',','')) * doodleFloorPrice)
             doodleObject.marketCapUsd = Math.round(doodleObject.marketCapEth * currentEthereumPrice)
     
@@ -482,8 +569,13 @@ router.get('/hour', async (req, res) => {
             })
     
             azukiObject.volumeEth = Number((azukiObject.volumeEth).toFixed(2));
-            azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
-            azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+            if(azukiTransactions.length === 0) {
+                azukiObject.averageSalePriceEth = 0
+                azukiObject.averageSalePriceUsd = 0
+            } else {
+                azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
+                azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+            }
             azukiObject.marketCapEth = Math.round(Number(azukiObject.tokenSupply.replaceAll(',','')) * azukiFloorPrice)
             azukiObject.marketCapUsd = Math.round(azukiObject.marketCapEth * currentEthereumPrice)
     
@@ -493,8 +585,13 @@ router.get('/hour', async (req, res) => {
             })
     
             boredApeObject.volumeEth = Number((boredApeObject.volumeEth).toFixed(2));
-            boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
-            boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+            if(BoredApeTransactions.length === 0) {
+                boredApeObject.averageSalePriceEth = 0
+                boredApeObject.averageSalePriceUsd = 0
+            } else {
+                boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
+                boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+            }
             boredApeObject.marketCapEth = Math.round(Number(boredApeObject.tokenSupply.replaceAll(',','')) * boredApeFloorPrice)
             boredApeObject.marketCapUsd = Math.round(boredApeObject.marketCapEth * currentEthereumPrice)
     
@@ -504,8 +601,13 @@ router.get('/hour', async (req, res) => {
             })
     
             boredDogObject.volumeEth = Number((boredDogObject.volumeEth).toFixed(2));
-            boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
-            boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+            if(BoredDogTransactions.length === 0) {
+                boredDogObject.averageSalePriceEth = 0
+                boredDogObject.averageSalePriceUsd = 0
+            } else {
+                boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
+                boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+            }
             boredDogObject.marketCapEth = Math.round(Number(boredDogObject.tokenSupply.replaceAll(',','')) * boredDogFloorPrice)
             boredDogObject.marketCapUsd = Math.round(boredDogObject.marketCapEth * currentEthereumPrice)
     
@@ -515,8 +617,13 @@ router.get('/hour', async (req, res) => {
             })
     
             moonbirdObject.volumeEth = Number((moonbirdObject.volumeEth).toFixed(2));
-            moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
-            moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+            if(MoonbirdsTransactions.length === 0) {
+                moonbirdObject.averageSalePriceEth = 0
+                moonbirdObject.averageSalePriceUsd = 0
+            } else {
+                moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
+                moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+            }
             moonbirdObject.marketCapEth = Math.round(Number(moonbirdObject.tokenSupply.replaceAll(',','')) * moonbirdFloorPrice)
             moonbirdObject.marketCapUsd = Math.round(moonbirdObject.marketCapEth * currentEthereumPrice)
     
@@ -526,8 +633,13 @@ router.get('/hour', async (req, res) => {
             })
     
             onForceObject.volumeEth = Number((onForceObject.volumeEth).toFixed(2));
-            onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
-            onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+            if(OnForceTransactions.length === 0) {
+                onForceObject.averageSalePriceEth = 0
+                onForceObject.averageSalePriceUsd = 0
+            } else {
+                onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
+                onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+            }
             onForceObject.marketCapEth = Math.round(Number(onForceObject.tokenSupply.replaceAll(',','')) * onforceFloorPrice)
             onForceObject.marketCapUsd = Math.round(onForceObject.marketCapEth * currentEthereumPrice)
     
@@ -537,8 +649,13 @@ router.get('/hour', async (req, res) => {
             })
     
             coolCatsObject.volumeEth = Number((coolCatsObject.volumeEth).toFixed(2));
-            coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
-            coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+            if(CoolCatsTransactions.length === 0) {
+                coolCatsObject.averageSalePriceEth = 0
+                coolCatsObject.averageSalePriceUsd = 0
+            } else {
+                coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
+                coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+            }
             coolCatsObject.marketCapEth = Math.round(Number(coolCatsObject.tokenSupply.replaceAll(',','')) * coolcatFloorPrice)
             coolCatsObject.marketCapUsd = Math.round(coolCatsObject.marketCapEth * currentEthereumPrice)
     
@@ -548,8 +665,13 @@ router.get('/hour', async (req, res) => {
             })
     
             penguinObject.volumeEth = Number((penguinObject.volumeEth).toFixed(2));
-            penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
-            penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+            if(PenguinTransactions.length === 0) {
+                penguinObject.averageSalePriceEth = 0
+                penguinObject.averageSalePriceUsd = 0
+            } else {
+                penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
+                penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+            }
             penguinObject.marketCapEth = Math.round(Number(penguinObject.tokenSupply.replaceAll(',','')) * penguinFloorPrice)
             penguinObject.marketCapUsd = Math.round(penguinObject.marketCapEth * currentEthereumPrice)
 
@@ -558,6 +680,7 @@ router.get('/hour', async (req, res) => {
             // Renders
 
             let collectionAnalytics = [doodleObject, azukiObject, boredApeObject, boredDogObject, moonbirdObject, onForceObject, coolCatsObject, penguinObject];
+            //console.log(collectionAnalytics);
             res.json(collectionAnalytics)
 });
 
@@ -573,6 +696,7 @@ router.get('/hour', async (req, res) => {
 // 1 DAY
 
 router.get('/oneDay', async (req, res) => {
+            setFloorAndEth();
             let currentTimestamp = Math.floor(Date.now()/1000)
             //let currentTimestamp = 1677958278
             const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -633,6 +757,7 @@ router.get('/oneDay', async (req, res) => {
                 collectionAddress: "0x8a90cab2b38dba80c64b7734e58ee1db38b8992e",
                 tokenSupply: '10,000',
                 floorPrice: doodleFloorPrice,
+                floorPriceUSD: Number((doodleFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: DoodlesTransactions.length,
@@ -648,6 +773,7 @@ router.get('/oneDay', async (req, res) => {
                 collectionAddress: '0xed5af388653567af2f388e6224dc7c4b3241c544',
                 tokenSupply: '10,000',
                 floorPrice: azukiFloorPrice,
+                floorPriceUSD: Number((azukiFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: azukiTransactions.length,
@@ -663,6 +789,7 @@ router.get('/oneDay', async (req, res) => {
                 collectionAddress: '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d',
                 tokenSupply: '10,000',
                 floorPrice: boredApeFloorPrice,
+                floorPriceUSD: Number((boredApeFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: BoredApeTransactions.length,
@@ -678,6 +805,7 @@ router.get('/oneDay', async (req, res) => {
                 collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
                 tokenSupply: '9,602',
                 floorPrice: boredDogFloorPrice,
+                floorPriceUSD: Number((boredDogFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: BoredDogTransactions.length,
@@ -693,6 +821,7 @@ router.get('/oneDay', async (req, res) => {
                 collectionAddress: '0x23581767a106ae21c074b2276d25e5c3e136a68b',
                 tokenSupply: '10,000',
                 floorPrice: moonbirdFloorPrice,
+                floorPriceUSD: Number((moonbirdFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: MoonbirdsTransactions.length,
@@ -708,6 +837,7 @@ router.get('/oneDay', async (req, res) => {
                 collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
                 tokenSupply: '7,777',
                 floorPrice: onforceFloorPrice,
+                floorPriceUSD: Number((onforceFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: OnForceTransactions.length,
@@ -723,6 +853,7 @@ router.get('/oneDay', async (req, res) => {
                 collectionAddress: '0x1a92f7381b9f03921564a437210bb9396471050c',
                 tokenSupply: '10,000',
                 floorPrice: coolcatFloorPrice,
+                floorPriceUSD: Number((coolcatFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: CoolCatsTransactions.length,
@@ -738,6 +869,7 @@ router.get('/oneDay', async (req, res) => {
                 collectionAddress: '0xbd3531da5cf5857e7cfaa92426877b022e612cf8',
                 tokenSupply: '10,000',
                 floorPrice: penguinFloorPrice,
+                floorPriceUSD: Number((penguinFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: PenguinTransactions.length,
@@ -753,8 +885,13 @@ router.get('/oneDay', async (req, res) => {
             })
     
             doodleObject.volumeEth = Number((doodleObject.volumeEth).toFixed(2));
-            doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
-            doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+            if(DoodlesTransactions.length === 0) {
+                doodleObject.averageSalePriceEth = 0
+                doodleObject.averageSalePriceUsd = 0
+            } else {
+                doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
+                doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+            }
             doodleObject.marketCapEth = Math.round(Number(doodleObject.tokenSupply.replaceAll(',','')) * doodleFloorPrice)
             doodleObject.marketCapUsd = Math.round(doodleObject.marketCapEth * currentEthereumPrice)
     
@@ -764,8 +901,13 @@ router.get('/oneDay', async (req, res) => {
             })
     
             azukiObject.volumeEth = Number((azukiObject.volumeEth).toFixed(2));
-            azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
-            azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+            if(azukiTransactions.length === 0) {
+                azukiObject.averageSalePriceEth = 0
+                azukiObject.averageSalePriceUsd = 0
+            } else {
+                azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
+                azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+            }
             azukiObject.marketCapEth = Math.round(Number(azukiObject.tokenSupply.replaceAll(',','')) * azukiFloorPrice)
             azukiObject.marketCapUsd = Math.round(azukiObject.marketCapEth * currentEthereumPrice)
     
@@ -775,8 +917,13 @@ router.get('/oneDay', async (req, res) => {
             })
     
             boredApeObject.volumeEth = Number((boredApeObject.volumeEth).toFixed(2));
-            boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
-            boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+            if(BoredApeTransactions.length === 0) {
+                boredApeObject.averageSalePriceEth = 0
+                boredApeObject.averageSalePriceUsd = 0
+            } else {
+                boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
+                boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+            }
             boredApeObject.marketCapEth = Math.round(Number(boredApeObject.tokenSupply.replaceAll(',','')) * boredApeFloorPrice)
             boredApeObject.marketCapUsd = Math.round(boredApeObject.marketCapEth * currentEthereumPrice)
     
@@ -786,8 +933,13 @@ router.get('/oneDay', async (req, res) => {
             })
     
             boredDogObject.volumeEth = Number((boredDogObject.volumeEth).toFixed(2));
-            boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
-            boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+            if(BoredDogTransactions.length === 0) {
+                boredDogObject.averageSalePriceEth = 0
+                boredDogObject.averageSalePriceUsd = 0
+            } else {
+                boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
+                boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+            }
             boredDogObject.marketCapEth = Math.round(Number(boredDogObject.tokenSupply.replaceAll(',','')) * boredDogFloorPrice)
             boredDogObject.marketCapUsd = Math.round(boredDogObject.marketCapEth * currentEthereumPrice)
     
@@ -797,8 +949,13 @@ router.get('/oneDay', async (req, res) => {
             })
     
             moonbirdObject.volumeEth = Number((moonbirdObject.volumeEth).toFixed(2));
-            moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
-            moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+            if(MoonbirdsTransactions.length === 0) {
+                moonbirdObject.averageSalePriceEth = 0
+                moonbirdObject.averageSalePriceUsd = 0
+            } else {
+                moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
+                moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+            }
             moonbirdObject.marketCapEth = Math.round(Number(moonbirdObject.tokenSupply.replaceAll(',','')) * moonbirdFloorPrice)
             moonbirdObject.marketCapUsd = Math.round(moonbirdObject.marketCapEth * currentEthereumPrice)
     
@@ -808,8 +965,13 @@ router.get('/oneDay', async (req, res) => {
             })
     
             onForceObject.volumeEth = Number((onForceObject.volumeEth).toFixed(2));
-            onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
-            onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+            if(OnForceTransactions.length === 0) {
+                onForceObject.averageSalePriceEth = 0
+                onForceObject.averageSalePriceUsd = 0
+            } else {
+                onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
+                onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+            }
             onForceObject.marketCapEth = Math.round(Number(onForceObject.tokenSupply.replaceAll(',','')) * onforceFloorPrice)
             onForceObject.marketCapUsd = Math.round(onForceObject.marketCapEth * currentEthereumPrice)
     
@@ -819,8 +981,13 @@ router.get('/oneDay', async (req, res) => {
             })
     
             coolCatsObject.volumeEth = Number((coolCatsObject.volumeEth).toFixed(2));
-            coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
-            coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+            if(CoolCatsTransactions.length === 0) {
+                coolCatsObject.averageSalePriceEth = 0
+                coolCatsObject.averageSalePriceUsd = 0
+            } else {
+                coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
+                coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+            }
             coolCatsObject.marketCapEth = Math.round(Number(coolCatsObject.tokenSupply.replaceAll(',','')) * coolcatFloorPrice)
             coolCatsObject.marketCapUsd = Math.round(coolCatsObject.marketCapEth * currentEthereumPrice)
     
@@ -830,8 +997,13 @@ router.get('/oneDay', async (req, res) => {
             })
     
             penguinObject.volumeEth = Number((penguinObject.volumeEth).toFixed(2));
-            penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
-            penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+            if(PenguinTransactions.length === 0) {
+                penguinObject.averageSalePriceEth = 0
+                penguinObject.averageSalePriceUsd = 0
+            } else {
+                penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
+                penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+            }
             penguinObject.marketCapEth = Math.round(Number(penguinObject.tokenSupply.replaceAll(',','')) * penguinFloorPrice)
             penguinObject.marketCapUsd = Math.round(penguinObject.marketCapEth * currentEthereumPrice)
 
@@ -855,6 +1027,7 @@ router.get('/oneDay', async (req, res) => {
 // 3 DAY
 
 router.get('/threeDay', async (req, res) => {
+            setFloorAndEth();
             let currentTimestamp = Math.floor(Date.now()/1000)
             //let currentTimestamp = 1677958278
             const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -915,6 +1088,7 @@ router.get('/threeDay', async (req, res) => {
                 collectionAddress: "0x8a90cab2b38dba80c64b7734e58ee1db38b8992e",
                 tokenSupply: '10,000',
                 floorPrice: doodleFloorPrice,
+                floorPriceUSD: Number((doodleFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: DoodlesTransactions.length,
@@ -930,6 +1104,7 @@ router.get('/threeDay', async (req, res) => {
                 collectionAddress: '0xed5af388653567af2f388e6224dc7c4b3241c544',
                 tokenSupply: '10,000',
                 floorPrice: azukiFloorPrice,
+                floorPriceUSD: Number((azukiFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: azukiTransactions.length,
@@ -945,6 +1120,7 @@ router.get('/threeDay', async (req, res) => {
                 collectionAddress: '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d',
                 tokenSupply: '10,000',
                 floorPrice: boredApeFloorPrice,
+                floorPriceUSD: Number((boredApeFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: BoredApeTransactions.length,
@@ -960,6 +1136,7 @@ router.get('/threeDay', async (req, res) => {
                 collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
                 tokenSupply: '9,602',
                 floorPrice: boredDogFloorPrice,
+                floorPriceUSD: Number((boredDogFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: BoredDogTransactions.length,
@@ -975,6 +1152,7 @@ router.get('/threeDay', async (req, res) => {
                 collectionAddress: '0x23581767a106ae21c074b2276d25e5c3e136a68b',
                 tokenSupply: '10,000',
                 floorPrice: moonbirdFloorPrice,
+                floorPriceUSD: Number((moonbirdFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: MoonbirdsTransactions.length,
@@ -990,6 +1168,7 @@ router.get('/threeDay', async (req, res) => {
                 collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
                 tokenSupply: '7,777',
                 floorPrice: onforceFloorPrice,
+                floorPriceUSD: Number((onforceFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: OnForceTransactions.length,
@@ -1005,6 +1184,7 @@ router.get('/threeDay', async (req, res) => {
                 collectionAddress: '0x1a92f7381b9f03921564a437210bb9396471050c',
                 tokenSupply: '10,000',
                 floorPrice: coolcatFloorPrice,
+                floorPriceUSD: Number((coolcatFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: CoolCatsTransactions.length,
@@ -1020,6 +1200,7 @@ router.get('/threeDay', async (req, res) => {
                 collectionAddress: '0xbd3531da5cf5857e7cfaa92426877b022e612cf8',
                 tokenSupply: '10,000',
                 floorPrice: penguinFloorPrice,
+                floorPriceUSD: Number((penguinFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: PenguinTransactions.length,
@@ -1035,8 +1216,13 @@ router.get('/threeDay', async (req, res) => {
             })
     
             doodleObject.volumeEth = Number((doodleObject.volumeEth).toFixed(2));
-            doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
-            doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+            if(DoodlesTransactions.length === 0) {
+                doodleObject.averageSalePriceEth = 0
+                doodleObject.averageSalePriceUsd = 0
+            } else {
+                doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
+                doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+            }
             doodleObject.marketCapEth = Math.round(Number(doodleObject.tokenSupply.replaceAll(',','')) * doodleFloorPrice)
             doodleObject.marketCapUsd = Math.round(doodleObject.marketCapEth * currentEthereumPrice)
     
@@ -1046,8 +1232,13 @@ router.get('/threeDay', async (req, res) => {
             })
     
             azukiObject.volumeEth = Number((azukiObject.volumeEth).toFixed(2));
-            azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
-            azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+            if(azukiTransactions.length === 0) {
+                azukiObject.averageSalePriceEth = 0
+                azukiObject.averageSalePriceUsd = 0
+            } else {
+                azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
+                azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+            }
             azukiObject.marketCapEth = Math.round(Number(azukiObject.tokenSupply.replaceAll(',','')) * azukiFloorPrice)
             azukiObject.marketCapUsd = Math.round(azukiObject.marketCapEth * currentEthereumPrice)
     
@@ -1057,8 +1248,13 @@ router.get('/threeDay', async (req, res) => {
             })
     
             boredApeObject.volumeEth = Number((boredApeObject.volumeEth).toFixed(2));
-            boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
-            boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+            if(BoredApeTransactions.length === 0) {
+                boredApeObject.averageSalePriceEth = 0
+                boredApeObject.averageSalePriceUsd = 0
+            } else {
+                boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
+                boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+            }
             boredApeObject.marketCapEth = Math.round(Number(boredApeObject.tokenSupply.replaceAll(',','')) * boredApeFloorPrice)
             boredApeObject.marketCapUsd = Math.round(boredApeObject.marketCapEth * currentEthereumPrice)
     
@@ -1068,8 +1264,13 @@ router.get('/threeDay', async (req, res) => {
             })
     
             boredDogObject.volumeEth = Number((boredDogObject.volumeEth).toFixed(2));
-            boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
-            boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+            if(BoredDogTransactions.length === 0) {
+                boredDogObject.averageSalePriceEth = 0
+                boredDogObject.averageSalePriceUsd = 0
+            } else {
+                boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
+                boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+            }
             boredDogObject.marketCapEth = Math.round(Number(boredDogObject.tokenSupply.replaceAll(',','')) * boredDogFloorPrice)
             boredDogObject.marketCapUsd = Math.round(boredDogObject.marketCapEth * currentEthereumPrice)
     
@@ -1079,8 +1280,13 @@ router.get('/threeDay', async (req, res) => {
             })
     
             moonbirdObject.volumeEth = Number((moonbirdObject.volumeEth).toFixed(2));
-            moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
-            moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+            if(MoonbirdsTransactions.length === 0) {
+                moonbirdObject.averageSalePriceEth = 0
+                moonbirdObject.averageSalePriceUsd = 0
+            } else {
+                moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
+                moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+            }
             moonbirdObject.marketCapEth = Math.round(Number(moonbirdObject.tokenSupply.replaceAll(',','')) * moonbirdFloorPrice)
             moonbirdObject.marketCapUsd = Math.round(moonbirdObject.marketCapEth * currentEthereumPrice)
     
@@ -1090,8 +1296,13 @@ router.get('/threeDay', async (req, res) => {
             })
     
             onForceObject.volumeEth = Number((onForceObject.volumeEth).toFixed(2));
-            onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
-            onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+            if(OnForceTransactions.length === 0) {
+                onForceObject.averageSalePriceEth = 0
+                onForceObject.averageSalePriceUsd = 0
+            } else {
+                onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
+                onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+            }
             onForceObject.marketCapEth = Math.round(Number(onForceObject.tokenSupply.replaceAll(',','')) * onforceFloorPrice)
             onForceObject.marketCapUsd = Math.round(onForceObject.marketCapEth * currentEthereumPrice)
     
@@ -1101,8 +1312,13 @@ router.get('/threeDay', async (req, res) => {
             })
     
             coolCatsObject.volumeEth = Number((coolCatsObject.volumeEth).toFixed(2));
-            coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
-            coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+            if(CoolCatsTransactions.length === 0) {
+                coolCatsObject.averageSalePriceEth = 0
+                coolCatsObject.averageSalePriceUsd = 0
+            } else {
+                coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
+                coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+            }
             coolCatsObject.marketCapEth = Math.round(Number(coolCatsObject.tokenSupply.replaceAll(',','')) * coolcatFloorPrice)
             coolCatsObject.marketCapUsd = Math.round(coolCatsObject.marketCapEth * currentEthereumPrice)
     
@@ -1112,8 +1328,13 @@ router.get('/threeDay', async (req, res) => {
             })
     
             penguinObject.volumeEth = Number((penguinObject.volumeEth).toFixed(2));
-            penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
-            penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+            if(PenguinTransactions.length === 0) {
+                penguinObject.averageSalePriceEth = 0
+                penguinObject.averageSalePriceUsd = 0
+            } else {
+                penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
+                penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+            }
             penguinObject.marketCapEth = Math.round(Number(penguinObject.tokenSupply.replaceAll(',','')) * penguinFloorPrice)
             penguinObject.marketCapUsd = Math.round(penguinObject.marketCapEth * currentEthereumPrice)
 
@@ -1137,6 +1358,7 @@ router.get('/threeDay', async (req, res) => {
 // 7 DAY
 
 router.get('/sevenDay', async (req, res) => {
+            setFloorAndEth();
             let currentTimestamp = Math.floor(Date.now()/1000)
             //let currentTimestamp = 1677958278
             const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -1196,6 +1418,7 @@ router.get('/sevenDay', async (req, res) => {
                 collectionAddress: "0x8a90cab2b38dba80c64b7734e58ee1db38b8992e",
                 tokenSupply: '10,000',
                 floorPrice: doodleFloorPrice,
+                floorPriceUSD: Number((doodleFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: DoodlesTransactions.length,
@@ -1211,6 +1434,7 @@ router.get('/sevenDay', async (req, res) => {
                 collectionAddress: '0xed5af388653567af2f388e6224dc7c4b3241c544',
                 tokenSupply: '10,000',
                 floorPrice: azukiFloorPrice,
+                floorPriceUSD: Number((azukiFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: azukiTransactions.length,
@@ -1226,6 +1450,7 @@ router.get('/sevenDay', async (req, res) => {
                 collectionAddress: '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d',
                 tokenSupply: '10,000',
                 floorPrice: boredApeFloorPrice,
+                floorPriceUSD: Number((boredApeFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: BoredApeTransactions.length,
@@ -1241,6 +1466,7 @@ router.get('/sevenDay', async (req, res) => {
                 collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
                 tokenSupply: '9,602',
                 floorPrice: boredDogFloorPrice,
+                floorPriceUSD: Number((boredDogFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: BoredDogTransactions.length,
@@ -1256,6 +1482,7 @@ router.get('/sevenDay', async (req, res) => {
                 collectionAddress: '0x23581767a106ae21c074b2276d25e5c3e136a68b',
                 tokenSupply: '10,000',
                 floorPrice: moonbirdFloorPrice,
+                floorPriceUSD: Number((moonbirdFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: MoonbirdsTransactions.length,
@@ -1271,6 +1498,7 @@ router.get('/sevenDay', async (req, res) => {
                 collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
                 tokenSupply: '7,777',
                 floorPrice: onforceFloorPrice,
+                floorPriceUSD: Number((onforceFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: OnForceTransactions.length,
@@ -1286,6 +1514,7 @@ router.get('/sevenDay', async (req, res) => {
                 collectionAddress: '0x1a92f7381b9f03921564a437210bb9396471050c',
                 tokenSupply: '10,000',
                 floorPrice: coolcatFloorPrice,
+                floorPriceUSD: Number((coolcatFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: CoolCatsTransactions.length,
@@ -1301,6 +1530,7 @@ router.get('/sevenDay', async (req, res) => {
                 collectionAddress: '0xbd3531da5cf5857e7cfaa92426877b022e612cf8',
                 tokenSupply: '10,000',
                 floorPrice: penguinFloorPrice,
+                floorPriceUSD: Number((penguinFloorPrice * currentEthereumPrice).toFixed(2)),
                 marketCapEth: 0,
                 marketCapUsd: 0,
                 totalSales: PenguinTransactions.length,
@@ -1316,8 +1546,13 @@ router.get('/sevenDay', async (req, res) => {
             })
     
             doodleObject.volumeEth = Number((doodleObject.volumeEth).toFixed(2));
-            doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
-            doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+            if(DoodlesTransactions.length === 0) {
+                doodleObject.averageSalePriceEth = 0
+                doodleObject.averageSalePriceUsd = 0
+            } else {
+                doodleObject.averageSalePriceEth = Number((doodleObject.volumeEth / DoodlesTransactions.length).toFixed(2))
+                doodleObject.averageSalePriceUsd = Number((doodleObject.volumeUsd / DoodlesTransactions.length).toFixed(2))
+            }
             doodleObject.marketCapEth = Math.round(Number(doodleObject.tokenSupply.replaceAll(',','')) * doodleFloorPrice)
             doodleObject.marketCapUsd = Math.round(doodleObject.marketCapEth * currentEthereumPrice)
 
@@ -1328,8 +1563,13 @@ router.get('/sevenDay', async (req, res) => {
             })
     
             azukiObject.volumeEth = Number((azukiObject.volumeEth).toFixed(2));
-            azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
-            azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+            if(azukiTransactions.length === 0) {
+                azukiObject.averageSalePriceEth = 0
+                azukiObject.averageSalePriceUsd = 0
+            } else {
+                azukiObject.averageSalePriceEth = Number((azukiObject.volumeEth / azukiTransactions.length).toFixed(2))
+                azukiObject.averageSalePriceUsd = Number((azukiObject.volumeUsd / azukiTransactions.length).toFixed(2))
+            }
             azukiObject.marketCapEth = Math.round(Number(azukiObject.tokenSupply.replaceAll(',','')) * azukiFloorPrice)
             azukiObject.marketCapUsd = Math.round(azukiObject.marketCapEth * currentEthereumPrice)
 
@@ -1340,8 +1580,13 @@ router.get('/sevenDay', async (req, res) => {
             })
     
             boredApeObject.volumeEth = Number((boredApeObject.volumeEth).toFixed(2));
-            boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
-            boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+            if(BoredApeTransactions.length === 0) {
+                boredApeObject.averageSalePriceEth = 0
+                boredApeObject.averageSalePriceUsd = 0
+            } else {
+                boredApeObject.averageSalePriceEth = Number((boredApeObject.volumeEth / BoredApeTransactions.length).toFixed(2))
+                boredApeObject.averageSalePriceUsd = Number((boredApeObject.volumeUsd / BoredApeTransactions.length).toFixed(2))
+            }
             boredApeObject.marketCapEth = Math.round(Number(boredApeObject.tokenSupply.replaceAll(',','')) * boredApeFloorPrice)
             boredApeObject.marketCapUsd = Math.round(boredApeObject.marketCapEth * currentEthereumPrice)
             
@@ -1352,8 +1597,13 @@ router.get('/sevenDay', async (req, res) => {
             })
     
             boredDogObject.volumeEth = Number((boredDogObject.volumeEth).toFixed(2));
-            boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
-            boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+            if(BoredDogTransactions.length === 0) {
+                boredDogObject.averageSalePriceEth = 0
+                boredDogObject.averageSalePriceUsd = 0
+            } else {
+                boredDogObject.averageSalePriceEth = Number((boredDogObject.volumeEth / BoredDogTransactions.length).toFixed(2))
+                boredDogObject.averageSalePriceUsd = Number((boredDogObject.volumeUsd / BoredDogTransactions.length).toFixed(2))
+            }
             boredDogObject.marketCapEth = Math.round(Number(boredDogObject.tokenSupply.replaceAll(',','')) * boredDogFloorPrice)
             boredDogObject.marketCapUsd = Math.round(boredDogObject.marketCapEth * currentEthereumPrice)
 
@@ -1364,8 +1614,13 @@ router.get('/sevenDay', async (req, res) => {
             })
     
             moonbirdObject.volumeEth = Number((moonbirdObject.volumeEth).toFixed(2));
-            moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
-            moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+            if(MoonbirdsTransactions.length === 0) {
+                moonbirdObject.averageSalePriceEth = 0
+                moonbirdObject.averageSalePriceUsd = 0
+            } else {
+                moonbirdObject.averageSalePriceEth = Number((moonbirdObject.volumeEth / MoonbirdsTransactions.length).toFixed(2))
+                moonbirdObject.averageSalePriceUsd = Number((moonbirdObject.volumeUsd / MoonbirdsTransactions.length).toFixed(2))
+            }
             moonbirdObject.marketCapEth = Math.round(Number(moonbirdObject.tokenSupply.replaceAll(',','')) * moonbirdFloorPrice)
             moonbirdObject.marketCapUsd = Math.round(moonbirdObject.marketCapEth * currentEthereumPrice)
 
@@ -1376,8 +1631,13 @@ router.get('/sevenDay', async (req, res) => {
             })
     
             onForceObject.volumeEth = Number((onForceObject.volumeEth).toFixed(2));
-            onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
-            onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+            if(OnForceTransactions.length === 0) {
+                onForceObject.averageSalePriceEth = 0
+                onForceObject.averageSalePriceUsd = 0
+            } else {
+                onForceObject.averageSalePriceEth = Number((onForceObject.volumeEth / OnForceTransactions.length).toFixed(2))
+                onForceObject.averageSalePriceUsd = Number((onForceObject.volumeUsd / OnForceTransactions.length).toFixed(2))
+            }
             onForceObject.marketCapEth = Math.round(Number(onForceObject.tokenSupply.replaceAll(',','')) * onforceFloorPrice)
             onForceObject.marketCapUsd = Math.round(onForceObject.marketCapEth * currentEthereumPrice)
     
@@ -1387,8 +1647,13 @@ router.get('/sevenDay', async (req, res) => {
             })
     
             coolCatsObject.volumeEth = Number((coolCatsObject.volumeEth).toFixed(2));
-            coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
-            coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+            if(CoolCatsTransactions.length === 0) {
+                coolCatsObject.averageSalePriceEth = 0
+                coolCatsObject.averageSalePriceUsd = 0
+            } else {
+                coolCatsObject.averageSalePriceEth = Number((coolCatsObject.volumeEth / CoolCatsTransactions.length).toFixed(2))
+                coolCatsObject.averageSalePriceUsd = Number((coolCatsObject.volumeUsd / CoolCatsTransactions.length).toFixed(2))
+            }
             coolCatsObject.marketCapEth = Math.round(Number(coolCatsObject.tokenSupply.replaceAll(',','')) * coolcatFloorPrice)
             coolCatsObject.marketCapUsd = Math.round(coolCatsObject.marketCapEth * currentEthereumPrice)
     
@@ -1398,8 +1663,13 @@ router.get('/sevenDay', async (req, res) => {
             })
     
             penguinObject.volumeEth = Number((penguinObject.volumeEth).toFixed(2));
-            penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
-            penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+            if(PenguinTransactions.length === 0) {
+                penguinObject.averageSalePriceEth = 0
+                penguinObject.averageSalePriceUsd = 0
+            } else {
+                penguinObject.averageSalePriceEth = Number((penguinObject.volumeEth / PenguinTransactions.length).toFixed(2))
+                penguinObject.averageSalePriceUsd = Number((penguinObject.volumeUsd / PenguinTransactions.length).toFixed(2))
+            }
             penguinObject.marketCapEth = Math.round(Number(penguinObject.tokenSupply.replaceAll(',','')) * penguinFloorPrice)
             penguinObject.marketCapUsd = Math.round(penguinObject.marketCapEth * currentEthereumPrice)
 

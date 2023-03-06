@@ -9,8 +9,8 @@ const axios = require('axios')
 /* GET users listing. */
 
 // CollectionName will be sent in the get request in the frontend using ${}
-router.get('/:collectionName', (req, res) => {
-    Collection.find({collectionName: req.params.collectionName})
+router.get('/:collectionAddress', (req, res) => {
+    Collection.find({contractAddress: req.params.collectionAddress})
     .then((foundCollection) => {
         res.json(foundCollection)
     })

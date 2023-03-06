@@ -15,6 +15,7 @@ router.get('/:collectionAddress', (req, res) => {
     //.populate('transactions')
     .then((foundNfts) => {
         res.json(foundNfts)
+        console.log(foundNfts.length);
     })
     .catch((err) => {
         console.log(err);

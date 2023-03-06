@@ -4,16 +4,38 @@ const Collection = require('../models/Collection.model')
 const Nft = require('../models/Nft.model')
 const Transaction = require('../models/Transaction.model')
 const axios = require('axios');
-const { collection } = require('../models/Collection.model');
+const { returnFloorPriceAndEthPrice } = require('../floorPricesAndEthPrice');
+
 
 // IMPORT CURRENT ETH PRICE AND ALL COLLECTION FLOOR PRICES
+    let azukiFloorPrice = 0;
+    let boredApeFloorPrice = 0;
+    let boredDogFloorPrice = 0;
+    let doodleFloorPrice = 0;
+    let moonbirdFloorPrice = 0;
+    let onforceFloorPrice = 0;
+    let coolcatFloorPrice = 0;
+    let penguinFloorPrice = 0;
+    let currentEthereumPrice = 0;
 
+    function setFloorAndEth() {
+        let floorAndEth = returnFloorPriceAndEthPrice();
+        azukiFloorPrice = floorAndEth[0];
+        boredApeFloorPrice = floorAndEth[1];
+        boredDogFloorPrice = floorAndEth[2];
+        doodleFloorPrice = floorAndEth[3];
+        moonbirdFloorPrice = floorAndEth[4];
+        onforceFloorPrice = floorAndEth[5];
+        coolcatFloorPrice = floorAndEth[6];
+        penguinFloorPrice = floorAndEth[7];
+        currentEthereumPrice = floorAndEth[8];
+    }
 
 // CollectionAddress will be sent in the get request in the frontend using ${}
 
 // 30 MINUTES
 router.get('/:collectionAddress/thirtyMinutes', async (req, res) => {
-
+    setFloorAndEth();
     let currentTimestamp = Math.floor(Date.now()/1000)
     //let currentTimestamp = 1677958278
     const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -79,6 +101,7 @@ router.get('/:collectionAddress/thirtyMinutes', async (req, res) => {
         collectionAddress: foundCollectionDetails[0].contractAddress,
         tokenSupply: foundCollectionDetails[0].tokenSupply,
         floorPrice: collectionFloorPrice,
+        floorPriceUSD: Number((collectionFloorPrice * currentEthereumPrice).toFixed(2)),
         marketCapEth: 0,
         marketCapUsd: 0,
         totalSales: collectionTransactions.length,
@@ -94,12 +117,18 @@ router.get('/:collectionAddress/thirtyMinutes', async (req, res) => {
     })
 
     collectionObject.volumeEth = Number((collectionObject.volumeEth).toFixed(2));
-    collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
-    collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    if(collectionTransactions.length === 0) {
+        collectionObject.averageSalePriceEth = 0
+        collectionObject.averageSalePriceUsd = 0
+    } else {
+        collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
+        collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    }
     collectionObject.marketCapEth = Math.round(Number(collectionObject.tokenSupply.replaceAll(',','')) * collectionFloorPrice)
     collectionObject.marketCapUsd = Math.round(collectionObject.marketCapEth * currentEthereumPrice)
 
     // renders
+    //console.log(collectionObject);
     res.json(collectionObject)
 
 });
@@ -118,7 +147,7 @@ router.get('/:collectionAddress/thirtyMinutes', async (req, res) => {
 // 1 HOUR
 
 router.get('/:collectionAddress/hour', async (req, res) => {
-
+    setFloorAndEth();
     let currentTimestamp = Math.floor(Date.now()/1000)
     //let currentTimestamp = 1677958278
     const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -199,12 +228,18 @@ router.get('/:collectionAddress/hour', async (req, res) => {
     })
 
     collectionObject.volumeEth = Number((collectionObject.volumeEth).toFixed(2));
-    collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
-    collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    if(collectionTransactions.length === 0) {
+        collectionObject.averageSalePriceEth = 0
+        collectionObject.averageSalePriceUsd = 0
+    } else {
+        collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
+        collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    }
     collectionObject.marketCapEth = Math.round(Number(collectionObject.tokenSupply.replaceAll(',','')) * collectionFloorPrice)
     collectionObject.marketCapUsd = Math.round(collectionObject.marketCapEth * currentEthereumPrice)
 
     // renders
+    //console.log(collectionObject);
     res.json(collectionObject)
 
 });
@@ -224,7 +259,7 @@ router.get('/:collectionAddress/hour', async (req, res) => {
 // 1 DAY
 
 router.get('/:collectionAddress/oneDay', async (req, res) => {
-
+    setFloorAndEth();
     let currentTimestamp = Math.floor(Date.now()/1000)
     //let currentTimestamp = 1677958278
     const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -305,8 +340,13 @@ router.get('/:collectionAddress/oneDay', async (req, res) => {
     })
 
     collectionObject.volumeEth = Number((collectionObject.volumeEth).toFixed(2));
-    collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
-    collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    if(collectionTransactions.length === 0) {
+        collectionObject.averageSalePriceEth = 0
+        collectionObject.averageSalePriceUsd = 0
+    } else {
+        collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
+        collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    }
     collectionObject.marketCapEth = Math.round(Number(collectionObject.tokenSupply.replaceAll(',','')) * collectionFloorPrice)
     collectionObject.marketCapUsd = Math.round(collectionObject.marketCapEth * currentEthereumPrice)
 
@@ -330,7 +370,7 @@ router.get('/:collectionAddress/oneDay', async (req, res) => {
 // 3 DAY
 
 router.get('/:collectionAddress/threeDay', async (req, res) => {
-
+    setFloorAndEth();
     let currentTimestamp = Math.floor(Date.now()/1000)
     //let currentTimestamp = 1677958278
     const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -411,8 +451,13 @@ router.get('/:collectionAddress/threeDay', async (req, res) => {
     })
 
     collectionObject.volumeEth = Number((collectionObject.volumeEth).toFixed(2));
-    collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
-    collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    if(collectionTransactions.length === 0) {
+        collectionObject.averageSalePriceEth = 0
+        collectionObject.averageSalePriceUsd = 0
+    } else {
+        collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
+        collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    }
     collectionObject.marketCapEth = Math.round(Number(collectionObject.tokenSupply.replaceAll(',','')) * collectionFloorPrice)
     collectionObject.marketCapUsd = Math.round(collectionObject.marketCapEth * currentEthereumPrice)
 
@@ -436,7 +481,7 @@ router.get('/:collectionAddress/threeDay', async (req, res) => {
 // 7 DAY
 
 router.get('/:collectionAddress/sevenDay', async (req, res) => {
-
+    setFloorAndEth();
     let currentTimestamp = Math.floor(Date.now()/1000)
     //let currentTimestamp = 1677958278
     const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object
@@ -517,8 +562,13 @@ router.get('/:collectionAddress/sevenDay', async (req, res) => {
     })
 
     collectionObject.volumeEth = Number((collectionObject.volumeEth).toFixed(2));
-    collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
-    collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    if(collectionTransactions.length === 0) {
+        collectionObject.averageSalePriceEth = 0
+        collectionObject.averageSalePriceUsd = 0
+    } else {
+        collectionObject.averageSalePriceEth = Number((collectionObject.volumeEth / collectionTransactions.length).toFixed(2))
+        collectionObject.averageSalePriceUsd = Number((collectionObject.volumeUsd / collectionTransactions.length).toFixed(2))
+    }
     collectionObject.marketCapEth = Math.round(Number(collectionObject.tokenSupply.replaceAll(',','')) * collectionFloorPrice)
     collectionObject.marketCapUsd = Math.round(collectionObject.marketCapEth * currentEthereumPrice)
 

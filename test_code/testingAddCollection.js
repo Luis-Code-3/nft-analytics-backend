@@ -91,15 +91,15 @@ mongoose
                 collectionAddress: createdCollection.contractAddress,
             })
             .then((createdNft) => {
-                Collection.findByIdAndUpdate(createdCollection._id, {
-                    $push: {tokens: createdNft._id}
-                }, {new: true})
-                .then((updatedCollection) => {
-                    //console.log("Updated COLLECTION:",updatedCollection);
-                })
-                .catch((err) => {
-                    console.log(err);
-                })
+                // Collection.findByIdAndUpdate(createdCollection._id, {
+                //     $push: {tokens: createdNft._id}
+                // }, {new: true})
+                // .then((updatedCollection) => {
+                //     //console.log("Updated COLLECTION:",updatedCollection);
+                // })
+                // .catch((err) => {
+                //     console.log(err);
+                // })
             })
             .catch((err) => {
                 console.log(err);

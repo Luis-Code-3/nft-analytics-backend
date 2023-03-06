@@ -26,18 +26,19 @@ router.get('/thirtyMinutes', async (req, res) => {
 
     await Transaction.find({transactionTimeStamp: {$gte: passThirty ,$lt: roundedThirty}})
         .sort({salePriceUSD: -1})
-        //.populate('nftTokenObject')
+        .populate('nftTokenObject')
         .then((foundTransactions) => {
             console.log("LENGTH:",foundTransactions.length)
             foundTransactions.forEach((tran) => {
-                newArr.push(tran.salePriceEth);
+                newArr.push(tran);
             })
-            console.log(newArr);
+            //console.log(newArr);
         })
         .catch((err) => {
             console.log(err);
         })
 
+    //console.log(newArr);
     res.json(newArr);
 });
 
@@ -72,18 +73,19 @@ router.get('/hour', async (req, res) => {
 
     await Transaction.find({transactionTimeStamp: {$gte: passHour ,$lt: roundedThirty}})
         .sort({salePriceUSD: -1})
-        //.populate('nftTokenObject')
+        .populate('nftTokenObject')
         .then((foundTransactions) => {
             console.log("LENGTH:",foundTransactions.length)
             foundTransactions.forEach((tran) => {
-                newArr.push(tran.salePriceEth);
+                newArr.push(tran);
             })
-            console.log(newArr);
+            //console.log(newArr);
         })
         .catch((err) => {
             console.log(err);
         })
 
+    //console.log(newArr);
     res.json(newArr);
 });
 
@@ -118,13 +120,13 @@ router.get('/oneDay', async (req, res) => {
 
     await Transaction.find({transactionTimeStamp: {$gte: passDay ,$lt: roundedThirty}})
         .sort({salePriceUSD: -1})
-        //.populate('nftTokenObject')
+        .populate('nftTokenObject')
         .then((foundTransactions) => {
             console.log("LENGTH:",foundTransactions.length)
             foundTransactions.forEach((tran) => {
-                newArr.push(tran.salePriceEth);
+                newArr.push(tran);
             })
-            console.log(newArr);
+            //console.log(newArr);
         })
         .catch((err) => {
             console.log(err);
@@ -164,13 +166,13 @@ router.get('/threeDay', async (req, res) => {
 
         await Transaction.find({transactionTimeStamp: {$gte: passThreeDay ,$lt: roundedThirty}})
             .sort({salePriceUSD: -1})
-            //.populate('nftTokenObject')
+            .populate('nftTokenObject')
             .then((foundTransactions) => {
                 console.log("LENGTH:",foundTransactions.length)
                 foundTransactions.forEach((tran) => {
-                    newArr.push(tran.salePriceEth);
+                    newArr.push(tran);
                 })
-                console.log(newArr);
+                //console.log(newArr);
             })
             .catch((err) => {
                 console.log(err);
@@ -210,13 +212,13 @@ router.get('/sevenDay', async (req, res) => {
 
     await Transaction.find({transactionTimeStamp: {$gte: passWeek ,$lt: roundedThirty}})
         .sort({salePriceUSD: -1})
-        //.populate('nftTokenObject')
+        .populate('nftTokenObject')
         .then((foundTransactions) => {
             console.log("LENGTH:",foundTransactions.length)
             foundTransactions.forEach((tran) => {
-                newArr.push(tran.salePriceEth);
+                newArr.push(tran);
             })
-            console.log(newArr);
+            //console.log(newArr);
         })
         .catch((err) => {
             console.log(err);
