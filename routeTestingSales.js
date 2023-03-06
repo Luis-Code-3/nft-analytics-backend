@@ -139,7 +139,7 @@ mongoose
     }
 
     // 7 DAY
-    async function threeDaySales () {
+    async function sevenDaySales () {
         // let currentTimestamp = Math.floor(Date.now()/1000)
         let currentTimestamp = 1677958278
         const date = new Date(currentTimestamp * 1000); // Convert Unix timestamp to JavaScript Date object

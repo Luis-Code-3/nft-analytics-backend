@@ -30,14 +30,15 @@ let recentBlock = '16688879';
 //     console.log(currentStartTimestamp)
 //     console.log(currentEndTimestamp)
 
+16739752
 
 // //
 
 
-axios.get('https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d&page=5&offset=10000&startblock=16688879&endblock=99999999&sort=desc&apikey=J7C1W8MKPMEPPCNRXDSH9ZXC4SY7NFT9YD')
+axios.get('https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d&page=1&offset=10000&startblock=16739752&endblock=99999999&sort=desc&apikey=J7C1W8MKPMEPPCNRXDSH9ZXC4SY7NFT9YD')
     .then((response) => {
         //console.log(response.data);
-        console.log(response.data);
+        console.log(response.data.result.length);
         // console.log("MOST RECENT TRANSFER:",allTransfers.data.result[0]);
         // recentBlock = allTransfers.data.result[0].blockNumber
         //console.log("RECENT BLOCK NUMBER: START NEXT HERE:", recentBlock);

@@ -23,7 +23,7 @@ const nftSchema = new Schema(
       type: String,
       required: true,
     },
-    transactions: [{type: Schema.Types.ObjectId, ref: "Transactions"}]
+    transactions: [{type: Schema.Types.ObjectId, ref: "Transaction"}]
   },
   {
     timeseries: true,

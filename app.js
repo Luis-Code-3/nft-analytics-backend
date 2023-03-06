@@ -8,6 +8,13 @@ var cors = require('cors')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var collectionDetailsRouter = require('./routes/collectionDetails');
+var nftDetailsRouter = require('./routes/nftDetails');
+var salesAllRouter = require('./routes/salesAll');
+var salesOneRouter = require('./routes/salesOne');
+var allTokensRouter = require('./routes/allTokens');
+var collectionAnalyticsAll = require('./routes/collectionAnalyticsAll');
+var collectionAnalyticsOne = require('./routes/collectionAnalyticsOne');
 
 var app = express();
 
@@ -22,6 +29,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/collection-details', collectionDetailsRouter);
+app.use('/nft-details', nftDetailsRouter);
+app.use('/sales-all-collections', salesAllRouter);
+app.use('/sales-one-collection', salesOneRouter);
+app.use('/all-tokens', allTokensRouter);
+app.use('/all-collection-analytics', collectionAnalyticsAll);
+app.use('/one-collection-analytics', collectionAnalyticsOne);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
