@@ -68,18 +68,18 @@ floorPriceAndEthPriceInterval = setInterval(() => {
   getFloorPriceAndEthPrice();
 }, 60 * 60 * 1000)
 
-// function startInterval() {
-//   // Get the current time and calculate the milliseconds until the next :30 minute
-//   const now = new Date();
-//   const msUntil30 = (30 - now.getMinutes() % 30) * 60 * 1000 - now.getSeconds() * 1000 - now.getMilliseconds();
-//   // Wait until the next :30 minute and then start the interval
-//   setTimeout(() => {
-//     transactionSeed(); // Run the code immediately
-//     setInterval(transactionSeed(), 30 * 60 * 1000); // Run the code every 30 minutes
-//   }, msUntil30);
-// }
+function startInterval() {
+  // Get the current time and calculate the milliseconds until the next :30 minute
+  const now = new Date();
+  const msUntil30 = (30 - now.getMinutes() % 30) * 60 * 1000 - now.getSeconds() * 1000 - now.getMilliseconds();
+  // Wait until the next :30 minute and then start the interval
+  setTimeout(() => {
+    transactionSeed(); // Run the code immediately
+    setInterval(transactionSeed, 30 * 60 * 1000); // Run the code every 30 minutes
+  }, msUntil30);
+}
 
-// startInterval();
+startInterval();
 
 mongoose
   .connect(process.env.MONGODB_URI)

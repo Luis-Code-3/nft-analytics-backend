@@ -153,6 +153,8 @@ async function Doodles (currentEthereumPrice) {
             ethPrice = 1564.47;
           } else if(saleTran.transactionTimeStamp >= 1678060800 && saleTran.transactionTimeStamp < 1678147200) {
             ethPrice = 1567.40;
+          } else if(saleTran.transactionTimeStamp >= 1678147200 && saleTran.transactionTimeStamp < 1678233600) {
+            ethPrice = 1561.78;
           } else {
             ethPrice = currentEthereumPrice;
           }
@@ -181,12 +183,12 @@ async function Doodles (currentEthereumPrice) {
                     $push: {transactions: createdTransaction._id}
                 }, {new: true})
                 .then((updatedNft) => {
-                    console.log(updatedNft);
+                    //console.log(updatedNft);
                     Transaction.findByIdAndUpdate(createdTransaction._id, {
                         $set: {nftTokenObject: updatedNft._id}
                     }, {new: true})
                     .then((updatedTransaction) => {
-                        console.log(updatedTransaction);
+                        //console.log(updatedTransaction);
                     })
                     .catch((err) => {
                         console.log(err);

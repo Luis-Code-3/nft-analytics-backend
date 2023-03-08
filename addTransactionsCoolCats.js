@@ -152,6 +152,8 @@ async function CoolCats (currentEthereumPrice) {
             ethPrice = 1564.47;
           } else if(saleTran.transactionTimeStamp >= 1678060800 && saleTran.transactionTimeStamp < 1678147200) {
             ethPrice = 1567.40;
+          } else if(saleTran.transactionTimeStamp >= 1678147200 && saleTran.transactionTimeStamp < 1678233600) {
+            ethPrice = 1561.78;
           } else {
             ethPrice = currentEthereumPrice;
           }
