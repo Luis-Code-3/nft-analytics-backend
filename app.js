@@ -30,10 +30,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
-  cors({
-    origin: ['http://localhost:3000']  // <== URL of our future React app
-  })
+  cors()
 );
+
+// app.use(
+//   cors({
+//     origin: ['http://localhost:3000']  // <== URL of our future React app
+//   })
+// );
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
