@@ -202,6 +202,52 @@ mongoose
     // // renders
     // console.log(collectionObject)
 
+    Transaction.find({salePriceEth: {$gt: 150}})
+    .then((foundTrans) => {
+      console.log(foundTrans.length);
+      foundTrans.forEach((tran) => {
+        Transaction.findByIdAndDelete(tran._id)
+        .then((deletedNft) => {
+          console.log("deleted");
+        })
+        .catch((err) => {
+          
+        })
+        // Nft.findByIdAndUpdate(tran.nftTokenObject, {
+        //   $pull: {transactions: tran._id}
+        // }, {new: true})
+        // .then((updatedNft) => {
+        //   console.log("success update");
+        // })
+        // .catch((err) => {
+        //   console.log(err);
+        // })
+      })
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+
+    // Transaction.find()
+    // .then(async (foundTransactions) => {
+    //   console.log("LENGTH:", foundTransactions.length);
+    //   for (const transaction of foundTransactions) {
+    //     console.log("CHECKING TRANSACTION");
+    //     await Transaction.findByIdAndUpdate(transaction._id, {
+    //       $set: {salePriceUSD: transaction.salePriceEth * 1615.33}
+    //     }, {new: true})
+    //     .then((updatedTransaction) => {
+    //       //console.log(updatedTransaction);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     })
+    //   }
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // })
+
 
 
   })

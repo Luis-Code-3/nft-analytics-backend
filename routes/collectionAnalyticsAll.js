@@ -138,7 +138,7 @@ router.get('/thirtyMinutes', async (req, res) => {
     // BORED DOG
     let boredDogObject = {
         collectionName: 'Bored Ape Kennel Club',
-        collectionLogo: 'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB?auto=format&w=3840',
+        collectionLogo: 'https://i.seadn.io/gcs/files/c4dfc6be4d9c5d4f073de2efe181416a.jpg?auto=format&w=3840',
         collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
         tokenSupply: '9,602',
         floorPrice: boredDogFloorPrice,
@@ -170,7 +170,7 @@ router.get('/thirtyMinutes', async (req, res) => {
     // ONFORCE
     let onForceObject = {
         collectionName: 'ON1 Force',
-        collectionLogo: 'https://i.seadn.io/gae/LIov33kogXOK4XZd2ESj29sqm_Hww5JSdO7AFn5wjt8xgnJJ0UpNV9yITqxra3s_LMEW1AnnrgOVB_hDpjJRA1uF4skI5Sdi_9rULi8?auto=format&w=3840',
+        collectionLogo: 'https://i.seadn.io/gae/7gOej3SUvqALR-qkqL_ApAt97SpUKQOZQe88p8jPjeiDDcqITesbAdsLcWlsIg8oh7SRrTpUPfPlm12lb4xDahgP2h32pQQYCsuOM_s?auto=format&w=3840',
         collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
         tokenSupply: '7,777',
         floorPrice: onforceFloorPrice,
@@ -469,7 +469,7 @@ router.get('/hour', async (req, res) => {
             // BORED DOG
             let boredDogObject = {
                 collectionName: 'Bored Ape Kennel Club',
-                collectionLogo: 'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB?auto=format&w=3840',
+                collectionLogo: 'https://i.seadn.io/gcs/files/c4dfc6be4d9c5d4f073de2efe181416a.jpg?auto=format&w=3840',
                 collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
                 tokenSupply: '9,602',
                 floorPrice: boredDogFloorPrice,
@@ -501,7 +501,7 @@ router.get('/hour', async (req, res) => {
             // ONFORCE
             let onForceObject = {
                 collectionName: 'ON1 Force',
-                collectionLogo: 'https://i.seadn.io/gae/LIov33kogXOK4XZd2ESj29sqm_Hww5JSdO7AFn5wjt8xgnJJ0UpNV9yITqxra3s_LMEW1AnnrgOVB_hDpjJRA1uF4skI5Sdi_9rULi8?auto=format&w=3840',
+                collectionLogo: 'https://i.seadn.io/gae/7gOej3SUvqALR-qkqL_ApAt97SpUKQOZQe88p8jPjeiDDcqITesbAdsLcWlsIg8oh7SRrTpUPfPlm12lb4xDahgP2h32pQQYCsuOM_s?auto=format&w=3840',
                 collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
                 tokenSupply: '7,777',
                 floorPrice: onforceFloorPrice,
@@ -801,7 +801,7 @@ router.get('/oneDay', async (req, res) => {
             // BORED DOG
             let boredDogObject = {
                 collectionName: 'Bored Ape Kennel Club',
-                collectionLogo: 'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB?auto=format&w=3840',
+                collectionLogo: 'https://i.seadn.io/gcs/files/c4dfc6be4d9c5d4f073de2efe181416a.jpg?auto=format&w=3840',
                 collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
                 tokenSupply: '9,602',
                 floorPrice: boredDogFloorPrice,
@@ -833,7 +833,7 @@ router.get('/oneDay', async (req, res) => {
             // ONFORCE
             let onForceObject = {
                 collectionName: 'ON1 Force',
-                collectionLogo: 'https://i.seadn.io/gae/LIov33kogXOK4XZd2ESj29sqm_Hww5JSdO7AFn5wjt8xgnJJ0UpNV9yITqxra3s_LMEW1AnnrgOVB_hDpjJRA1uF4skI5Sdi_9rULi8?auto=format&w=3840',
+                collectionLogo: 'https://i.seadn.io/gae/7gOej3SUvqALR-qkqL_ApAt97SpUKQOZQe88p8jPjeiDDcqITesbAdsLcWlsIg8oh7SRrTpUPfPlm12lb4xDahgP2h32pQQYCsuOM_s?auto=format&w=3840',
                 collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
                 tokenSupply: '7,777',
                 floorPrice: onforceFloorPrice,
@@ -1132,7 +1132,7 @@ router.get('/threeDay', async (req, res) => {
             // BORED DOG
             let boredDogObject = {
                 collectionName: 'Bored Ape Kennel Club',
-                collectionLogo: 'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB?auto=format&w=3840',
+                collectionLogo: 'https://i.seadn.io/gcs/files/c4dfc6be4d9c5d4f073de2efe181416a.jpg?auto=format&w=3840',
                 collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
                 tokenSupply: '9,602',
                 floorPrice: boredDogFloorPrice,
@@ -1164,7 +1164,7 @@ router.get('/threeDay', async (req, res) => {
             // ONFORCE
             let onForceObject = {
                 collectionName: 'ON1 Force',
-                collectionLogo: 'https://i.seadn.io/gae/LIov33kogXOK4XZd2ESj29sqm_Hww5JSdO7AFn5wjt8xgnJJ0UpNV9yITqxra3s_LMEW1AnnrgOVB_hDpjJRA1uF4skI5Sdi_9rULi8?auto=format&w=3840',
+                collectionLogo: 'https://i.seadn.io/gae/7gOej3SUvqALR-qkqL_ApAt97SpUKQOZQe88p8jPjeiDDcqITesbAdsLcWlsIg8oh7SRrTpUPfPlm12lb4xDahgP2h32pQQYCsuOM_s?auto=format&w=3840',
                 collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
                 tokenSupply: '7,777',
                 floorPrice: onforceFloorPrice,
@@ -1462,7 +1462,7 @@ router.get('/sevenDay', async (req, res) => {
             // BORED DOG
             let boredDogObject = {
                 collectionName: 'Bored Ape Kennel Club',
-                collectionLogo: 'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB?auto=format&w=3840',
+                collectionLogo: 'https://i.seadn.io/gcs/files/c4dfc6be4d9c5d4f073de2efe181416a.jpg?auto=format&w=3840',
                 collectionAddress: '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
                 tokenSupply: '9,602',
                 floorPrice: boredDogFloorPrice,
@@ -1494,7 +1494,7 @@ router.get('/sevenDay', async (req, res) => {
             // ONFORCE
             let onForceObject = {
                 collectionName: 'ON1 Force',
-                collectionLogo: 'https://i.seadn.io/gae/LIov33kogXOK4XZd2ESj29sqm_Hww5JSdO7AFn5wjt8xgnJJ0UpNV9yITqxra3s_LMEW1AnnrgOVB_hDpjJRA1uF4skI5Sdi_9rULi8?auto=format&w=3840',
+                collectionLogo: 'https://i.seadn.io/gae/7gOej3SUvqALR-qkqL_ApAt97SpUKQOZQe88p8jPjeiDDcqITesbAdsLcWlsIg8oh7SRrTpUPfPlm12lb4xDahgP2h32pQQYCsuOM_s?auto=format&w=3840',
                 collectionAddress: '0x3bf2922f4520a8ba0c2efc3d2a1539678dad5e9d',
                 tokenSupply: '7,777',
                 floorPrice: onforceFloorPrice,

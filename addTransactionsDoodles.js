@@ -24,11 +24,11 @@ async function Doodles (currentEthereumPrice) {
         })
 
     const findNftTransactions = async () => {
-        const transfers = await axios.get(`https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0x8a90cab2b38dba80c64b7734e58ee1db38b8992e&page=1&offset=100&startblock=${recentTransactionBlock}&endblock=99999999&sort=desc&apikey=${key}`);
+        const transfers = await axios.get(`https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0x8a90cab2b38dba80c64b7734e58ee1db38b8992e&page=1&offset=10000&startblock=${recentTransactionBlock}&endblock=99999999&sort=desc&apikey=${key}`);
 
         if(transfers.data.result.length > 0) {
             recentTransactionBlock = (Number(transfers.data.result[0].blockNumber) + 1).toString();
-            console.log("GETTING HIT");
+            console.log("GETTING HIT:",transfers.data.result.length);
         }
 
     
@@ -99,7 +99,7 @@ async function Doodles (currentEthereumPrice) {
 
     const deeperSaleCheck = async (sameObj) => {
         //console.log('Same OBJ:', sameObj);
-        const buyerTokenTransfers = await axios.get(`https://api.etherscan.io/api?module=account&action=tokentx&address=${sameObj.buyer}&page=1&offset=100&startblock=0&endblock=27025780&sort=desc&apikey=${key}`)
+        const buyerTokenTransfers = await axios.get(`https://api.etherscan.io/api?module=account&action=tokentx&address=${sameObj.buyer}&page=1&offset=10000&startblock=0&endblock=27025780&sort=desc&apikey=${key}`)
         let filteredTransfers = buyerTokenTransfers.data.result.filter((transfer) => {
           return sameObj.transactionTimeStamp === Number(transfer.timeStamp) && sameObj.blockNumber === transfer.blockNumber && sameObj.nonce === transfer.nonce && sameObj.transactionIndex === transfer.transactionIndex && transfer.tokenSymbol !== 'APE'
         })
@@ -107,7 +107,9 @@ async function Doodles (currentEthereumPrice) {
     
         let calculatedSalePrice = 0;
     
-        if (filteredTransfers.length > 0) {
+        if (filteredTransfers.length === 1) {
+            calculatedSalePrice = (Number(filteredTransfers[0].value)) / 10**18;
+        } else if (filteredTransfers.length > 1) {
           calculatedSalePrice = (Number(filteredTransfers[0].value) + Number(filteredTransfers[1].value)) / 10**18;
         }
     
@@ -126,29 +128,31 @@ async function Doodles (currentEthereumPrice) {
           let ethPrice = 0;
   
           if(saleTran.transactionTimeStamp >= 1677024000 && saleTran.transactionTimeStamp < 1677110400) {
-            ethPrice = 1,643.23;
+            ethPrice = 1643.23;
           } else if(saleTran.transactionTimeStamp >= 1677110400 && saleTran.transactionTimeStamp < 1677196800) {
-            ethPrice = 1,651.07;
+            ethPrice = 1651.07;
           } else if(saleTran.transactionTimeStamp >= 1677196800 && saleTran.transactionTimeStamp < 1677283200) {
-            ethPrice = 1,608.37;
+            ethPrice = 1608.37;
           } else if(saleTran.transactionTimeStamp >= 1677283200 && saleTran.transactionTimeStamp < 1677369600) {
-            ethPrice = 1,594.91;
+            ethPrice = 1594.91;
           } else if(saleTran.transactionTimeStamp >= 1677369600 && saleTran.transactionTimeStamp < 1677456000) {
-            ethPrice = 1,640.82;
+            ethPrice = 1640.82;
           } else if(saleTran.transactionTimeStamp >= 1677456000 && saleTran.transactionTimeStamp < 1677542400) {
-            ethPrice = 1,634.33;
+            ethPrice = 1634.33;
           } else if(saleTran.transactionTimeStamp >= 1677542400 && saleTran.transactionTimeStamp < 1677628800) {
-            ethPrice = 1,605.90;
+            ethPrice = 1605.90;
           } else if(saleTran.transactionTimeStamp >= 1677628800 && saleTran.transactionTimeStamp < 1677715200) {
-            ethPrice = 1,663.43;
+            ethPrice = 1663.43;
           } else if(saleTran.transactionTimeStamp >= 1677715200 && saleTran.transactionTimeStamp < 1677801600) {
-            ethPrice = 1,647.32;
+            ethPrice = 1647.32;
           } else if(saleTran.transactionTimeStamp >= 1677801600 && saleTran.transactionTimeStamp < 1677888000) {
-            ethPrice = 1,569.17;
+            ethPrice = 1569.17;
           } else if(saleTran.transactionTimeStamp >= 1677888000 && saleTran.transactionTimeStamp < 1677974400) {
-            ethPrice = 1,566.92;
+            ethPrice = 1566.92;
           } else if(saleTran.transactionTimeStamp >= 1677974400 && saleTran.transactionTimeStamp < 1678060800) {
-            ethPrice = 1,564.47;
+            ethPrice = 1564.47;
+          } else if(saleTran.transactionTimeStamp >= 1678060800 && saleTran.transactionTimeStamp < 1678147200) {
+            ethPrice = 1567.40;
           } else {
             ethPrice = currentEthereumPrice;
           }
@@ -173,24 +177,24 @@ async function Doodles (currentEthereumPrice) {
                 collectionAddress: sale.collectionAddress,
             })
             .then((createdTransaction) => {
-                // Nft.findOneAndUpdate({collectionAddress: createdTransaction.collectionAddress, tokenId: createdTransaction.tokenId}, {
-                //     $push: {transactions: createdTransaction._id}
-                // }, {new: true})
-                // .then((updatedNft) => {
-                //     console.log(updatedNft);
-                //     Transaction.findByIdAndUpdate(createdTransaction._id, {
-                //         $set: {nftTokenObject: updatedNft._id}
-                //     }, {new: true})
-                //     .then((updatedTransaction) => {
-                //         console.log(updatedTransaction);
-                //     })
-                //     .catch((err) => {
-                //         console.log(err);
-                //     })
-                // })
-                // .catch((err) => {
-                //     console.log(err);
-                // })
+                Nft.findOneAndUpdate({collectionAddress: createdTransaction.collectionAddress, tokenId: createdTransaction.tokenId}, {
+                    $push: {transactions: createdTransaction._id}
+                }, {new: true})
+                .then((updatedNft) => {
+                    console.log(updatedNft);
+                    Transaction.findByIdAndUpdate(createdTransaction._id, {
+                        $set: {nftTokenObject: updatedNft._id}
+                    }, {new: true})
+                    .then((updatedTransaction) => {
+                        console.log(updatedTransaction);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
             })
             .catch((err) => {
                 console.log(err);
